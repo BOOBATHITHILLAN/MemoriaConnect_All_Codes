@@ -7,8 +7,10 @@ import {
     useTheme,
   } from "@mui/material";
   import { Formik } from "formik";
-  import { Link } from "react-router-dom";
+  import { Link, useNavigate, useParams } from "react-router-dom";
   import * as yup from "yup";
+  import axios from "axios";
+import { useState } from "react";
   
   const forgotSchema = yup.object().shape({
     password: yup.string().required("required"),  
@@ -22,11 +24,30 @@ import {
     confirmpassword:"" 
   };
   
-  const PasswordReset = () => {
+  const PasswordReset = ({url}) => {
     const { palette } = useTheme();
     const theme = useTheme();
     const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
     const isNonMobile = useMediaQuery("(min-width:600px)");
+
+    const {id}=useParams();
+    const Navigate=useNavigate();
+    const [update, setUpdate] = useState(false);
+    const [expiry,setExpiry]= useState(false);
+
+    const passwordReset=async(values, onSubmitProps)=>{
+      try {
+        const Updated=await axios.patch(`${url}/auth/passwordreset/${id}`,{password:values.password});
+        setUpdate(true);
+        setExpiry(false)
+        setTimeout(() => {
+          Navigate("/")
+        }, 1500);
+      } catch (error) {
+        setUpdate(false)
+        setExpiry(true);
+      }
+    }
   
     const handleFormSubmit = async (values, onSubmitProps) => {
       await passwordReset(values, onSubmitProps);
@@ -88,6 +109,7 @@ import {
                     onChange={handleChange}
                     value={values.password}
                     name="password"
+                    type="password"
                     error={Boolean(touched.password) && Boolean(errors.password)}
                     helperText={touched.password && errors.password}
                     sx={{ gridColumn: "span 4" }}
@@ -98,11 +120,18 @@ import {
                     onChange={handleChange}
                     value={values.confirmpassword}
                     name="confirmpassword"
+                    type="password"
                     error={Boolean(touched.confirmpassword) && Boolean(errors.confirmpassword)}
                     helperText={touched.confirmpassword && errors.confirmpassword}
                     sx={{ gridColumn: "span 4" }}
                   />               
                 </Box>
+                <Typography align="center" style={{fontWeight:"bold", marginTop:"20px"}}>
+                  {update && "Password reset done successfully..."}
+                </Typography>
+                <Typography align="center" style={{ color:"red",fontWeight:"bold", marginTop:"20px"}}>
+                  {expiry && "Password reset link expired"}
+                </Typography>
   
                 {/* BUTTONS */}
                 <Box>

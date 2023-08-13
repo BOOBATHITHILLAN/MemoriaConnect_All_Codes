@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post("/login", login);
 router.patch("/activateuser/:id",activateUser);
-router.put("/forgorpassword",forgotPassword);
+router.put("/forgotpassword",forgotPassword);
 router.patch("/passwordreset/:id",resetPassword);
 
 export default router;

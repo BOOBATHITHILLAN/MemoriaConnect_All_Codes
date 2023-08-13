@@ -7,8 +7,10 @@ import {
   useTheme,
 } from "@mui/material";
 import { Formik } from "formik";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as yup from "yup";
+import React, { useState } from "react";
+import axios from "axios";
 
 const forgotSchema = yup.object().shape({
   email: yup.string().email("invalid email").required("required"),
@@ -18,11 +20,30 @@ const initialValuesforgot = {
   email: "",
 };
 
-const ForgotPassword = () => {
+const ForgotPassword = ({url}) => {
   const { palette } = useTheme();
   const theme = useTheme();
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   const isNonMobile = useMediaQuery("(min-width:600px)");
+
+  const Navigate = useNavigate();
+  const [activationlink,setActivationlink]=useState(false);
+  const [expiry,setExpiry]=useState(false);
+
+  const forgotPassword=async(values, onSubmitProps)=>{
+    try {
+      const res = await axios.put(`${url}/auth/forgotpassword`, {email:values.email});
+      onSubmitProps.resetForm();
+      setActivationlink(true);
+      setExpiry(false)      
+      setTimeout(() => {
+        Navigate("/")
+      }, 1500);
+    } catch (error) {
+      setActivationlink(false)
+      setExpiry(true);
+    }
+  }
 
   const handleFormSubmit = async (values, onSubmitProps) => {
     await forgotPassword(values, onSubmitProps);
@@ -89,7 +110,12 @@ const ForgotPassword = () => {
                   sx={{ gridColumn: "span 4" }}
                 />
               </Box>
-
+                <Typography align="center" style={{fontWeight:"bold", marginTop:"20px"}}>
+                  {activationlink && "Mail send successfully..."}
+                </Typography>
+                <Typography align="center" style={{ color:"red",fontWeight:"bold", marginTop:"20px"}}>
+                  {expiry && "Invalid credentials..."}
+                </Typography>
               {/* BUTTONS */}
               <Box>
                 <Button

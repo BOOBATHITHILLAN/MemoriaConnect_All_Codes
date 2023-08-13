@@ -7,8 +7,10 @@ import {
   useTheme,
 } from "@mui/material";
 import { Formik } from "formik";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as yup from "yup";
+import axios from "axios";
+import { useState } from "react";
 
 const loginSchema = yup.object().shape({
   email: yup.string().email("invalid email").required("required"),
@@ -20,12 +22,38 @@ const initialValuesLogin = {
   password: "",
 };
 
-const LoginPage = () => {
+const LoginPage = ({ url }) => {
   const { palette } = useTheme();
   const theme = useTheme();
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   const isNonMobile = useMediaQuery("(min-width:600px)");
 
+  const [logged, setLogged] = useState(false);
+  const [invalid, setInvalid] = useState(false);
+  const Navigate = useNavigate();
+
+  const login = async (values, onSubmitProps) => {
+    try {
+      const Loggedin = await axios.post(`${url}/auth/login`, {
+        email: values.email,
+        password: values.password,
+      });
+      window.localStorage.setItem(
+        "loggedInUser",
+        JSON.stringify(Loggedin.data)
+      );
+      onSubmitProps.resetForm();
+      setLogged(true);
+      setInvalid(false);
+      setTimeout(() => {
+        Navigate("/home");
+      }, 1000);
+    } catch (error) {
+      setLogged(false);
+      setInvalid(true);
+      onSubmitProps.resetForm();
+    }
+  };
   const handleFormSubmit = async (values, onSubmitProps) => {
     await login(values, onSubmitProps);
   };
@@ -102,6 +130,18 @@ const LoginPage = () => {
                   sx={{ gridColumn: "span 4" }}
                 />
               </Box>
+              <Typography
+                align="center"
+                style={{ fontWeight: "bold", marginTop: "20px" }}
+              >
+                {logged && "Logged in successfully..."}
+              </Typography>
+              <Typography
+                align="center"
+                style={{ color: "red", fontWeight: "bold", marginTop: "20px" }}
+              >
+                {invalid && "Invalid credentials..."}
+              </Typography>
 
               {/* BUTTONS */}
               <Box>

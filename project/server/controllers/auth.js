@@ -14,7 +14,6 @@ export const register = async (req, res) => {
       email,
       password,
       picturePath,
-      friends,
       location,
       occupation,
     } = req.body;
@@ -28,7 +27,6 @@ export const register = async (req, res) => {
       email,
       password: passwordHash,
       picturePath,
-      friends,
       location,
       occupation,
       viewedProfile: Math.floor(Math.random() * 10000),
@@ -39,7 +37,7 @@ export const register = async (req, res) => {
       Math.random().toString(36).substring(2, 15) +
       Math.random().toString(36).substring(2, 15);
 
-    const link = `${process.env.FELINK}/activateUser/${randomString}`;
+    const link = `${process.env.FELINK}/activateuser/${randomString}`;
 
     const sub = "Account Activation"
 
@@ -92,9 +90,9 @@ export const login = async (req, res) => {
     };
 
     if (user.account_activated) {
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET,{expiresIn:"2h"});
       delete user.password;
-      return res.status(200).json({ token, user });
+      return res.status(200).json({token,user});
     }
 
   } catch (err) {
@@ -123,7 +121,7 @@ export const forgotPassword = async (req, res) => {
     await User.findByIdAndUpdate(matchedUser.id, matchedUser);
 
     //sending email for resetting
-    const link = `${process.env.FELINK}/forgotPassword/${randomString}`;
+    const link = `${process.env.FELINK}/forgotpassword/${randomString}`;
 
     const sub = "Reset password"
 

@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Box,
   Button,
@@ -8,9 +7,13 @@ import {
   useTheme,
 } from "@mui/material";
 import { Formik } from "formik";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import Dropzone from "react-dropzone";
+import axios from "axios";
+import FlexBetween from "./FlexBetween";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import { useState } from "react";
 
 const registerSchema = yup.object().shape({
   firstName: yup.string().required("required"),
@@ -36,19 +39,38 @@ const initialValuesRegister = {
   password: "",
 };
 
-function RegisterPage() {
+function RegisterPage({ url }) {
   const { palette } = useTheme();
   const theme = useTheme();
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   const isNonMobile = useMediaQuery("(min-width:600px)");
+  const Navigate=useNavigate();
+  const [activate,setActivate]=useState(false);
+  const [exist,setExist]=useState(false);
 
   const register = async (values, onSubmitProps) => {
-    // // this allows us to send form info with image
-    // const formData = new FormData();
-    // for (let value in values) {
-    //   formData.append(value, values[value]);
-    // }
-    // formData.append("picturePath", values.picture.name);
+    try {
+      // this allows us to send form info with image
+      const formData = new FormData();
+      for (let value in values) {
+        formData.append(value, values[value]);
+      }      
+      formData.append("picturePath", values.picture.name);
+      const Registered=await axios.post(`${url}/auth/register`,formData);
+      if(Registered){
+        onSubmitProps.resetForm();
+        setActivate(true);
+        setExist(false)
+        setTimeout(() => {
+          Navigate("/");
+          setActivate(false);
+        }, 1500);
+      }
+      
+    } catch (error) {
+      setExist(true);
+      onSubmitProps.resetForm();      
+    }
   };
 
   const handleFormSubmit = async (values, onSubmitProps) => {
@@ -206,7 +228,12 @@ function RegisterPage() {
                   sx={{ gridColumn: "span 4" }}
                 />
               </Box>
-
+              <Typography align="center">
+                    {activate && "Check Your mail to activate"}
+                </Typography>
+                <Typography align="center" style={{color:"red"}}>
+                    {exist && "User exist, try with new datas"}
+                </Typography>
               {/* BUTTONS */}
               <Box>
                 <Button
@@ -237,6 +264,7 @@ function RegisterPage() {
                     Already have an account? Login here..
                   </Typography>
                 </Link>
+                
               </Box>
             </form>
           )}
