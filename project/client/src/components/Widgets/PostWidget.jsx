@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import FlexBetween from "../FlexBetween";
 import WidgetWrapper from "./WidgetWrapper";
-import Friend from "./component/Friend";
+import Friend from "./Friend";
 import axios from "axios";
 
 function PostWidget({
@@ -30,15 +30,16 @@ function PostWidget({
   userPicturePath,
   likes,
   comments,
+  post,
   setPost,
   token,
   addcomment,
-  setAddcomment
+  setAddcomment,
 }) {
   const [isComments, setIsComments] = useState(false);
-  const isLiked = Boolean(likes[postUserId]);
+  const [isLiked] = useState(true);
   const likeCount = Object.keys(likes).length;
- 
+  
 
   const { palette } = useTheme();
   const main = palette.neutral.main;
@@ -47,25 +48,24 @@ function PostWidget({
   const Handlecomment = async (_id) => {
     const res = await axios.patch(
       `http://localhost:3001/posts/${postId}/comment`,
-      { comment:addcomment },
+      { comment: addcomment },
       {
         headers: { Authorization: `Bearer ${token}` },
       }
     );
-    console.log(res.data)
     setAddcomment("");
   };
 
   const patchLike = async () => {
     const res = await axios.patch(
       `http://localhost:3001/posts/${postId}/like`,
-      { userId: postUserId },
+      { userId: user._id },
       {
         headers: { Authorization: `Bearer ${token}` },
       }
     );
-    setPost(res.data);
-  };
+    setPost(res.data);    
+  }; 
 
   return (
     <WidgetWrapper m="2rem 0">
@@ -116,15 +116,6 @@ function PostWidget({
       </FlexBetween>
       {isComments && (
         <Box mt="0.5rem">
-          {comments.map((comment, i) => (
-            <Box key={`${name}-${i}`}>
-              <Divider />
-              <Typography sx={{ color: main, m: "0.5rem 0", pl: "1rem" }}>
-                {comment}
-              </Typography>
-            </Box>
-          ))}
-          <Divider />
           <FlexBetween gap="1.5rem">
             <InputBase
               placeholder="What's on your mind..."
@@ -149,6 +140,15 @@ function PostWidget({
               POST
             </Button>
           </FlexBetween>
+          <Divider />
+          {comments.map((comment, i) => (
+            <Box key={`${name}-${i}`}>
+              <Divider />
+              <Typography sx={{ color: main, m: "0.5rem 0", pl: "1rem" }}>
+                {comment}
+              </Typography>
+            </Box>
+          ))}
         </Box>
       )}
     </WidgetWrapper>

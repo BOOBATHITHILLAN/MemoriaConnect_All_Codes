@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { PersonAddOutlined, PersonRemoveOutlined } from "@mui/icons-material";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
-import FlexBetween from "../../FlexBetween";
-import UserImage from "../UserImage";
+import FlexBetween from "../FlexBetween";
+import UserImage from "./UserImage";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -19,7 +19,8 @@ function Friend({ user, friendId, name, subtitle, userPicturePath, token }) {
 
   useEffect(() => {
     setFriends(user.friends);    
-    const isFriend = friends.find((friend) => friend._id === friendId);    
+    const isFriend = friends.find((friend) => friend._id === friendId); 
+    isFriend && setIsfriend(true);   
   }, []);
 
   const patchFriend = async () => {
@@ -37,8 +38,7 @@ function Friend({ user, friendId, name, subtitle, userPicturePath, token }) {
         <UserImage image={userPicturePath} size="55px" />
         <Box
           onClick={() => {
-            Navigate(`/profile/${friendId}`);
-            Navigate(0);
+            Navigate(`/profile/${friendId}`);            
           }}
         >
           <Typography
@@ -61,6 +61,7 @@ function Friend({ user, friendId, name, subtitle, userPicturePath, token }) {
       </FlexBetween>
       {user._id == friendId ? null : (
         <IconButton
+        disabled
           onClick={() => patchFriend()}
           sx={{ backgroundColor: primaryLight, p: "0.6rem" }}
         >

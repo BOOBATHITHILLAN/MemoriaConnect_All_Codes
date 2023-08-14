@@ -19,6 +19,11 @@ function UserWidget({ userId, picturePath, token, user }) {
   const medium = palette.neutral.medium;
   const main = palette.neutral.main;
 
+  const HandleProfileswitch=(e)=>{
+    e.preventDefault();
+    Navigate(`/profile/${userId}`)
+  }
+
   const {
     firstName,
     lastName,
@@ -36,7 +41,7 @@ function UserWidget({ userId, picturePath, token, user }) {
           <FlexBetween
             gap="0.5rem"
             pb="1.1rem"
-            onClick={() => Navigate(`/profile/${userId}`)}
+            onClick={HandleProfileswitch}
           >
             <FlexBetween gap="1rem">
               <UserImage image={picturePath} />

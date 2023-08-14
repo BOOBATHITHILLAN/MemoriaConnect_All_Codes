@@ -4,6 +4,7 @@ import Navbar from "./Navbar";
 import UserWidget from "./Widgets/UserWidget";
 import MyPostWidget from "./Widgets/MyPostWidget";
 import PostsWidget from "./Widgets/PostsWidget";
+import AdvertWidget from "./Widgets/AdvertWidget";
 import axios from "axios";
 
 function HomePage() {
@@ -58,8 +59,14 @@ function HomePage() {
           mt={isNonMobileScreens ? undefined : "2rem"}
         >
           <MyPostWidget picturePath={picturePath} id={id} token={token} setPosts={setPosts} newpost={newpost} setNewpost={setNewpost}/>
-          <PostsWidget user={user} userId={id} token={token} posts={posts} setPosts={setPosts} post={post} setPost={setPost}/>
+          <PostsWidget user={user} userId={id} token={token} posts={posts} setPosts={setPosts} post={post} setPost={setPost} isProfile={false}/>
         </Box>
+        {isNonMobileScreens && (
+          <Box flexBasis="26%">
+            <AdvertWidget />
+            <Box m="2rem 0" />           
+          </Box>
+        )}
       </Box>
     </Box>
   );
