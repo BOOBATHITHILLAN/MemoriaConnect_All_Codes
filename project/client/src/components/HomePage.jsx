@@ -2,22 +2,33 @@ import React, { useEffect, useState } from "react";
 import { Box, useMediaQuery } from "@mui/material";
 import Navbar from "./Navbar";
 import UserWidget from "./Widgets/UserWidget";
+import MyPostWidget from "./Widgets/MyPostWidget";
+import PostsWidget from "./Widgets/PostsWidget";
+import axios from "axios";
 
 function HomePage() {
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
-  const [name, setName] = useState("");  
-  const [id,setId] = useState("");
-  const [picturePath,setPicturepath] = useState("");
-  const [token,setToken]=useState("");
+  const [name, setName] = useState("");
+  const [id, setId] = useState("");
+  const [picturePath, setPicturepath] = useState("");
+  const [token, setToken] = useState("");
+  const [user, setUser] = useState([]);
 
-  useEffect(() => {
+  const getUser = async () => {
     let data = window.localStorage.getItem("loggedInUser");
     data = JSON.parse(data);
-    const user = data.user;
+    const res = await axios.get(`http://localhost:3001/users`, {
+      headers: { Authorization: `Bearer ${data.token}` },
+    });
     setToken(data.token);
-    setId(user._id);
-    setPicturepath(user.picturePath)
-    setName(`${user.firstName} ${user.lastName}`);
+    setId(res.data._id);
+    setPicturepath(res.data.picturePath);
+    setName(`${res.data.firstName} ${res.data.lastName}`);
+    setUser(res.data);
+  };
+
+  useEffect(() => {
+    getUser();
   }, []);
   return (
     <Box>
@@ -30,7 +41,21 @@ function HomePage() {
         justifyContent="space-between"
       >
         <Box flexBasis={isNonMobileScreens ? "26%" : undefined}>
-          <UserWidget userId={id} picturePath={picturePath} token={token}/>
+          {user && (
+            <UserWidget
+              userId={id}
+              picturePath={picturePath}
+              token={token}
+              user={user}
+            />
+          )}
+        </Box>
+        <Box
+          flexBasis={isNonMobileScreens ? "42%" : undefined}
+          mt={isNonMobileScreens ? undefined : "2rem"}
+        >
+          <MyPostWidget picturePath={picturePath} id={id} token={token}/>
+          <PostsWidget userId={_id} />
         </Box>
       </Box>
     </Box>

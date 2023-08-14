@@ -22,9 +22,7 @@ const registerSchema = yup.object().shape({
   password: yup.string().required("required"),
   location: yup.string().required("required"),
   occupation: yup.string().required("required"),
-  picture: yup.string().required("required"),
-  email: yup.string().email("invalid email").required("required"),
-  password: yup.string().required("required"),
+  picture: yup.string().required("required"),  
 });
 
 const initialValuesRegister = {
@@ -34,9 +32,7 @@ const initialValuesRegister = {
   password: "",
   location: "",
   occupation: "",
-  picture: "",
-  email: "",
-  password: "",
+  picture: "",  
 };
 
 function RegisterPage({ url }) {
