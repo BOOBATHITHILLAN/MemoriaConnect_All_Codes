@@ -51,11 +51,11 @@ app.post("/posts",verifyToken,upload.single("picture"),createPost)
 //Routes
 app.use("/auth",authRoutes);
 app.use("/users",userRoutes);
-app.use("/posts",postRoutes)
+app.use("/posts",postRoutes);
 
 //Mongoose setup
 const PORT=process.env.PORT || 4001;
-mongoose.connect(process.env.MONGO_URL)
+mongoose.connect(process.env.MONGO_URL) 
 .then(()=>{
     app.listen(PORT,()=>{
         console.log(`Server Port : ${PORT}  Connected` )

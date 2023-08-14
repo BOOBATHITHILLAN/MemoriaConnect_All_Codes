@@ -13,6 +13,10 @@ function HomePage() {
   const [picturePath, setPicturepath] = useState("");
   const [token, setToken] = useState("");
   const [user, setUser] = useState([]);
+  const [posts,setPosts]=useState("");
+  const [newpost,setNewpost]=useState("");
+  const [post, setPost] = useState(newpost);
+
 
   const getUser = async () => {
     let data = window.localStorage.getItem("loggedInUser");
@@ -26,7 +30,6 @@ function HomePage() {
     setName(`${res.data.firstName} ${res.data.lastName}`);
     setUser(res.data);
   };
-
   useEffect(() => {
     getUser();
   }, []);
@@ -54,8 +57,8 @@ function HomePage() {
           flexBasis={isNonMobileScreens ? "42%" : undefined}
           mt={isNonMobileScreens ? undefined : "2rem"}
         >
-          <MyPostWidget picturePath={picturePath} id={id} token={token}/>
-          <PostsWidget userId={_id} />
+          <MyPostWidget picturePath={picturePath} id={id} token={token} setPosts={setPosts} newpost={newpost} setNewpost={setNewpost}/>
+          <PostsWidget user={user} userId={id} token={token} posts={posts} setPosts={setPosts} post={post} setPost={setPost}/>
         </Box>
       </Box>
     </Box>

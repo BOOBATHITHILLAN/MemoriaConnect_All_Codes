@@ -24,11 +24,10 @@ import UserImage from "./UserImage";
 import WidgetWrapper from "./WidgetWrapper";
 import axios from "axios";
 
-function MyPostWidget({ picturePath, id, token }) {
+function MyPostWidget({ picturePath, id, token,setPosts,newpost,setNewpost }) {
   const [isImage, setIsImage] = useState(false);
   const [image, setImage] = useState(null);
-  const [post, setPost] = useState("");
-  const [posts,setPosts]=useState("");
+  
   const { palette } = useTheme();
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   const mediumMain = palette.neutral.mediumMain;
@@ -37,7 +36,7 @@ function MyPostWidget({ picturePath, id, token }) {
   const handlePost=async()=>{
     const formData = new FormData();
     formData.append("userId", id);
-    formData.append("description", post);
+    formData.append("description", newpost);
     if (image) {
       formData.append("picture", image);
       formData.append("picturePath", image.name);
@@ -46,7 +45,7 @@ function MyPostWidget({ picturePath, id, token }) {
     const res=await axios.post(`http://localhost:3001/posts`,formData,{headers: { Authorization: `Bearer ${token}` }});
     setPosts(res.data);
     setImage(null);
-    setPost("");
+    setNewpost("")
   }
 
   return (
@@ -55,8 +54,8 @@ function MyPostWidget({ picturePath, id, token }) {
         <UserImage image={picturePath} />
         <InputBase
           placeholder="What's on your mind..."
-          onChange={(e) => setPost(e.target.value)}
-          value={post}
+          onChange={(e) => setNewpost(e.target.value)}
+          value={newpost}
           sx={{
             width: "100%",
             backgroundColor: palette.neutral.light,
@@ -147,7 +146,7 @@ function MyPostWidget({ picturePath, id, token }) {
         )}
 
         <Button
-          disabled={!post}
+          disabled={!newpost}
           onClick={handlePost}
           sx={{
             color: palette.background.alt,
